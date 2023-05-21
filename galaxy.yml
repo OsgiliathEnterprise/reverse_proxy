@@ -1,20 +1,22 @@
 ---
 namespace: "tcharl"
-name: "freeipa_server"
+name: "reverse_proxy"
 version: "1.0.1"
 description: "Role on top of the marvelous Freeipa server role to configure in compliancy with the Osgiliath platform topology"
 
 authors:
   - "Charlie Mordant <cmordant1@gmail.com>"
 
-repository: "https://github.com/OsgiliathEnterprise/freeipa_server"
-documentation: "https://github.com/OsgiliathEnterprise/freeipa_server/blob/master/README.md"
-homepage: "https://github.com/OsgiliathEnterprise/freeipa_server"
-issues: "https://github.com/OsgiliathEnterprise/freeipa_server/issues"
+repository: "https://github.com/OsgiliathEnterprise/reverse_proxy"
+documentation: "https://github.com/OsgiliathEnterprise/reverse_proxy/blob/master/README.md"
+homepage: "https://github.com/OsgiliathEnterprise/reverse_proxy"
+issues: "https://github.com/OsgiliathEnterprise/reverse_proxy/issues"
 
 readme: "README.md"
 license:
   - "Apache-2.0"
 tags:
-  - "freeipa"
-  - "freeipa-server"
+  - "docker"
+  - "reverse-proxy"
+  - "nginx"
+  - "letsencrypt"

@@ -1,0 +1,72 @@
+---
+
+- name: Virtual-host | copy virtualHost configuration
+  ansible.builtin.template:
+    src: vhost.j2
+    dest: "{{ docker_shared_data_nginx_proxy_vhosts_path }}/{{ virtual_host.name }}"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Virtual-host | domain location configuration
+  ansible.builtin.template:
+    src: vhost_location.j2
+    dest: "{{ docker_shared_data_nginx_proxy_vhosts_path }}/{{ virtual_host.name }}_location"
+    owner: root
+    group: root
+    mode: '0644'
+  when: not virtual_host.redirect_on_group_machine_ip is defined
+  vars:
+    upstream: "{{ virtual_host.upstream }}"
+  become: true
+
+- name: Virtual-host | register potential host IP
+  ansible.builtin.debug:
+    msg: "{{ ansible_facts[virtual_host.nic_name | default('')]['ipv4']['address'] | default(ansible_facts['default_ipv4']['address']) }}"
+  delegate_to: "{{ virtual_host.redirect_on_group_machine_ip[0] }}"
+  delegate_facts: true
+  register: group_machines_fact
+  when:
+   - virtual_host.redirect_on_group_machine_ip is defined
+
+- name: Virtual-host | domain location configuration with redirection
+  ansible.builtin.template:
+    src: vhost_location.j2
+    dest: "{{ docker_shared_data_nginx_proxy_vhosts_path }}/{{ virtual_host.name }}_location"
+    owner: root
+    group: root
+    mode: '0644'
+  vars:
+    upstream: "{{ group_machines_fact.msg }}"
+  when: virtual_host.redirect_on_group_machine_ip is defined
+  become: true
+
+- name: Virtual-host | create random seed for port
+  ansible.builtin.debug:
+    msg: "{{ 65534 | random(1025) }}"
+  register: proxy_container_port
+
+- name: Virtual-host | create socat container if external
+  community.docker.docker_container:
+    name: "{{ virtual_host.name }}"
+    image: alpine/socat
+    restart_policy: "always"
+    published_ports:
+      - '{{ proxy_container_port.msg }}:{{ proxy_container_port.msg }}'
+    command: "-d -d tcp-listen:{{ proxy_container_port.msg }},fork,reuseaddr tcp-connect:{{ (virtual_host.upstream.split(':').0) if virtual_host.upstream is defined and (virtual_host.upstream.split(':') | length > 0) else group_machines_fact.msg }}:{{ (virtual_host.upstream.split(':').1) if virtual_host.upstream is defined and (virtual_host.upstream.split(':') | length > 1) else '443' if virtual_host.proto is defined and virtual_host.proto == 'https' else '80' }}"
+    volumes: "{{ virtual_host.socat_mounts | default(omit) }}"
+    env:
+      VIRTUAL_HOST: "{{ virtual_host.name }}"
+      LETSENCRYPT_HOST: "{{ virtual_host.name if virtual_host.gen_certs is defined and virtual_host.gen_certs == True else omit }}"
+      VIRTUAL_PROTO: "{{ virtual_host.proto | default('http') }}"
+      VIRTUAL_PORT: "{{ '443' if virtual_host.proto is defined and virtual_host.proto == 'https' else '80' }}"
+    state: started
+  changed_when: false # idempotence
+  when: >
+    (
+    (virtual_host.container is defined and
+    not virtual_host.container) or
+    virtual_host.redirect_on_group_machine_ip is defined
+    )
+  become: true
