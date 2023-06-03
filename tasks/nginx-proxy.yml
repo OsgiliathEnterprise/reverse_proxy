@@ -1,11 +1,11 @@
 ---
 
-- name: Nginx-proxy | add interface to public firewall zone {{ firewalld_default_zone }}
+- name: Nginx-proxy | add interface to public firewall zone {{ reverse_proxy_firewall_zone }}
   ansible.builtin.include_role:
     name: tcharl.ansible_routing
   vars:
     firewalld_zones:
-      - name: "{{ firewalld_default_zone }}"
+      - name: "{{ reverse_proxy_firewall_zone }}"
         nics:
           - "{{ ansible_containerization_docker_network_interface }}"
 

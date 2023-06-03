@@ -2,7 +2,7 @@
 # Whether this module should use the "become" option for configuring firewalld
 
 disable_vhost_configuration: false
-firewalld_default_zone: public
+reverse_proxy_firewall_zone: docker
 
 # Reverse proxy
 docker_shared_data: /usr/share/dockerdata
@@ -15,5 +15,4 @@ docker_shared_data_nginx_proxy_html_path: "{{ docker_shared_data_nginx_proxy_pat
 ansible_containerization_docker_network_interface: docker0
 letsencrypt_default_email: toto@dummymail.com
 
-reverse_proxy_group: "reverse_proxy"
 standalone_role: True
