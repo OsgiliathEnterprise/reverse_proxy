@@ -1,11 +1,5 @@
 ---
 
-- name: Requirements | install firewalld
-  ansible.builtin.import_role:
-    name: tcharl.ansible_routing
-  tags:
-    - standalone
-
 - name: Requirements | install docker
   ansible.builtin.import_role:
     name: tcharl.ansible_containerization

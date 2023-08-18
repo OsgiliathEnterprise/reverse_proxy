@@ -25,7 +25,6 @@
   ansible.builtin.debug:
     msg: "{{ ansible_facts[virtual_host.nic_name | default('')]['ipv4']['address'] | default(ansible_facts['default_ipv4']['address']) }}"
   delegate_to: "{{ virtual_host.redirect_on_group_machine_ip[0] }}"
-  delegate_facts: true
   register: group_machines_fact
   when:
    - virtual_host.redirect_on_group_machine_ip is defined

@@ -50,14 +50,17 @@
 - name: Nginx-proxy | debug volumes to mount
   ansible.builtin.debug:
     msg: "{{ [virtual_hosts | selectattr('volumes', 'defined') | map(attribute='volumes') | list | default([]), '/var/run/docker.sock:/tmp/docker.sock:ro', docker_shared_data_nginx_proxy_certs_path + ':/etc/nginx/certs', docker_shared_data_nginx_proxy_vhosts_path + ':/etc/nginx/vhost.d', docker_shared_data_nginx_proxy_html_path + ':/usr/share/nginx/html'] | flatten | unique }}"
+    verbosity: 2
 
 - name: Nginx-proxy | debug dhparams
   ansible.builtin.debug:
     msg: "{{ 'true' if virtual_hosts | selectattr('gen_certs', 'defined') | selectattr('gen_certs', 'equalto', True) | list | length != 0 else 'false' }}"
+    verbosity: 2
 
 - name: Nginx-proxy | debug default host
   ansible.builtin.debug:
     msg: "{{ virtual_hosts | selectattr('default_host', 'defined') | selectattr('default_host', 'equalto', True) | selectattr('name', 'defined') | map(attribute='name') | first | default('Not found') }}"
+    verbosity: 2
 
 - name: Nginx-proxy | start proxy
   community.docker.docker_container:
