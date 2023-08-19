@@ -2,7 +2,7 @@
 # Whether this module should use the "become" option for configuring firewalld
 
 disable_vhost_configuration: false
-reverse_proxy_firewall_zone: docker
+reverse_proxy_firewall_zone: public
 
 # Reverse proxy
 docker_shared_data: /usr/share/dockerdata

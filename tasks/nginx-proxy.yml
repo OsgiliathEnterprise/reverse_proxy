@@ -8,6 +8,8 @@
       - name: "{{ reverse_proxy_firewall_zone }}"
         nics:
           - "{{ ansible_containerization_docker_network_interface }}"
+        enabled_services:
+          - service: https
 
 - name: Nginx-proxy | create nginx directories
   ansible.builtin.file:

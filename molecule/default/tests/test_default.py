@@ -78,7 +78,7 @@ def test_nginx_proxy_vhost_files_contains_target(host):
 
 def test_docker_interface_is_configured_in_firewalld(host):
     command = """
-        sudo firewall-cmd --list-all --zone=docker | \
+        sudo firewall-cmd --list-all --zone=public | \
         grep -c 'docker0'
     """
     cmd = host.run(command)
