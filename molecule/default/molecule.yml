@@ -10,7 +10,7 @@ driver:
     name: virtualbox
 platforms:
   - name: proxy.osgiliath.test
-    box: ${TESTBOX:-fedora/38-cloud-base}
+    box: ${TESTBOX:-fedora/39-cloud-base}
     provider_options:
       cpus: 2
       memory: 2048
