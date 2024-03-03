@@ -10,6 +10,7 @@
           - "{{ ansible_containerization_docker_network_interface }}"
         enabled_services:
           - service: https
+          - service: http # for letsencrypt http01 challenge
 
 - name: Nginx-proxy | create nginx directories
   ansible.builtin.file:
@@ -67,7 +68,7 @@
 - name: Nginx-proxy | start proxy
   community.docker.docker_container:
     name: nginx-proxy
-    image: jwilder/nginx-proxy
+    image: nginxproxy/nginx-proxy
     restart_policy: "always"
     published_ports: #"{{ virtual_hosts | selectattr('ports_binding', 'defined') | map(attribute='ports_binding') | default(['80:80', '443:443']) | flatten | unique }}" # TODO 80 only if gencerts
       - '80:80'
@@ -75,6 +76,7 @@
     volumes: "{{ [virtual_hosts | selectattr('volumes', 'defined') | map(attribute='volumes') | list | default([]), '/var/run/docker.sock:/tmp/docker.sock:ro', docker_shared_data_nginx_proxy_certs_path + ':/etc/nginx/certs', docker_shared_data_nginx_proxy_vhosts_path + ':/etc/nginx/vhost.d', docker_shared_data_nginx_proxy_html_path + ':/usr/share/nginx/html'] | flatten | unique }}"
     state: started
     env:
+      RESOLVERS: "8.8.8.8"
       DHPARAM_GENERATION: "{{ 'true' if virtual_hosts | selectattr('gen_certs', 'defined') | selectattr('gen_certs', 'equalto', True) | list | length != 0 else 'false' }}"
       DEFAULT_HOST: "{{ virtual_hosts | selectattr('default_host', 'defined') | selectattr('default_host', 'equalto', True) | selectattr('name', 'defined') | map(attribute='name') | first | default(omit) }}"
   become: true
@@ -82,7 +84,7 @@
 - name: Nginx-proxy | letsencrypt-companion
   community.docker.docker_container:
     name: letsencrypt-companion
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: nginxproxy/acme-companion
     restart_policy: "always"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

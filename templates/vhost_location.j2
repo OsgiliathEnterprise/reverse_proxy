@@ -1,9 +1,9 @@
 {% if upstream is defined %}
-{% if upstream.split(':').0 | ansible.utils.ipaddr == False %}
+    {% if upstream.split(':').0 | ansible.utils.ipaddr == False %}
 proxy_set_header Host {{ upstream }};
 proxy_set_header Referer {{ virtual_host.proto | default('http') }}://{{ upstream }}{{ virtual_host.referer_suffix | default(omit) }};
 proxy_cookie_domain {{ upstream }} {{ virtual_host.name }};
-{% endif %}
+    {% endif %}
 proxy_redirect ~^{{ virtual_host.proto  | default('http') }}://{{ upstream | regex_replace('\.', '\\.') }}([^_]*)$ $scheme://{{ virtual_host.name }}$1;
 {% endif %}
 
@@ -18,7 +18,7 @@ client_max_body_size    200M;
 client_body_buffer_size 512k;
 keepalive_timeout	5;
 {% if virtual_host.additional_nginx_headers is defined %}
-{% for item in virtual_host.additional_nginx_headers %}
+    {% for item in virtual_host.additional_nginx_headers %}
 {{ item }};
-{% endfor %}
+    {% endfor %}
 {% endif %}

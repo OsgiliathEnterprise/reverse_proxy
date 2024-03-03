@@ -14,5 +14,4 @@ docker_shared_data_nginx_proxy_vhosts_path: "{{ docker_shared_data_nginx_proxy_p
 docker_shared_data_nginx_proxy_html_path: "{{ docker_shared_data_nginx_proxy_path }}/html"
 ansible_containerization_docker_network_interface: docker0
 letsencrypt_default_email: toto@dummymail.com
-
 standalone_role: True
