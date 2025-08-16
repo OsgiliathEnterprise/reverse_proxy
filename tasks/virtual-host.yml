@@ -53,7 +53,7 @@
     restart_policy: "always"
     published_ports:
       - '{{ proxy_container_port.msg }}:{{ proxy_container_port.msg }}'
-    command: "-d -d tcp-listen:{{ proxy_container_port.msg }},fork,reuseaddr tcp-connect:{{ (virtual_host.upstream.split(':').0) if virtual_host.upstream is defined and (virtual_host.upstream.split(':') | length > 0) else group_machines_fact.msg }}:{{ (virtual_host.upstream.split(':').1) if virtual_host.upstream is defined and (virtual_host.upstream.split(':') | length > 0) else '443' if virtual_host.proto is defined and virtual_host.proto == 'https' else '80' }}"
+    command: "-d -d tcp-listen:{{ proxy_container_port.msg }},fork,reuseaddr tcp-connect:{{ (virtual_host.upstream.split(':').0) if virtual_host.upstream is defined and (virtual_host.upstream.split(':') | length > 0) else virtual_host.upstream if virtual_host.upstream is defined else group_machines_fact.msg }}':'{{ (virtual_host.upstream.split(':').1) if virtual_host.upstream is defined and (virtual_host.upstream.split(':') | length > 1) else '443' if virtual_host.proto is defined and virtual_host.proto == 'https' else '80' }}"
     volumes: "{{ virtual_host.socat_mounts | default(omit) }}"
     env:
       VIRTUAL_HOST: "{{ virtual_host.name }}"

@@ -4,7 +4,7 @@ proxy_set_header Host {{ upstream }};
 proxy_set_header Referer {{ virtual_host.proto | default('http') }}://{{ upstream }}{{ virtual_host.referer_suffix | default(omit) }};
 proxy_cookie_domain {{ upstream }} {{ virtual_host.name }};
     {% endif %}
-proxy_redirect ~^{{ virtual_host.proto  | default('http') }}://{{ upstream | regex_replace('\.', '\\.') }}([^_]*)$ $scheme://{{ virtual_host.name }}$1;
+# proxy_redirect ~^{{ virtual_host.proto  | default('http') }}://{{ upstream | regex_replace('\.', '\\.') }}([^_]*)$ $scheme://{{ virtual_host.name }}$1;
 {% endif %}
 
 proxy_read_timeout 900;
