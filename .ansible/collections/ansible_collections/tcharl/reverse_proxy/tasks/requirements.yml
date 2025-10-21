@@ -1,0 +1,7 @@
+---
+
+- name: Requirements | install docker
+  ansible.builtin.import_role:
+    name: tcharl.ansible_containerization
+  tags:
+    - standalone

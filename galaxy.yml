@@ -17,7 +17,7 @@ license:
   - "Apache-2.0"
 tags:
   - "docker"
-  - "reverse-proxy"
+  - "reverseproxy"
   - "nginx"
   - "letsencrypt"
   - "networking"

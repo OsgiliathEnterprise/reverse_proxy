@@ -1,0 +1,27 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    preferred_nic: "eth1"
+    standalone_role: False
+    virtual_hosts:
+      - name: groupip.osgiliath.test
+        redirect_on_group_machine_ip: "testingserver"
+        # nic_name: "eth0"
+        ports_binding:
+          - "80:80" # mandatory for letsencrypt
+#          - "443:443"
+      - name: externalvm.osgiliath.net
+        upstream: "idm.internal.osgiliath.net"
+        referer_suffix: "/ipa/ui"
+        proto: https
+        container: False
+        gen_certs: False
+        volumes:
+          - "/etc/ipa:/etc/ipa:ro"
+        additional_nginx_headers:
+          - "proxy_ssl_trusted_certificate /etc/ipa/ca.crt"
+        ports_binding:
+          - "80:80"
+  roles:
+    - role: tcharl.reverse_proxy
