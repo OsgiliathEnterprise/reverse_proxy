@@ -2,5 +2,6 @@
 **/*__pycache__*
 .cache
 build
+.ansible
 .tox
 .poetry
