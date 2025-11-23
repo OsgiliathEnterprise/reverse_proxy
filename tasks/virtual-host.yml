@@ -23,8 +23,7 @@
 
 - name: Virtual-host | register potential host IP
   ansible.builtin.debug:
-    msg: "{{ ansible_facts[virtual_host.nic_name | default('')]['ipv4']['address'] | default(ansible_facts['default_ipv4']['address']) }}"
-  delegate_to: "{{ virtual_host.redirect_on_group_machine_ip[0] }}"
+    msg: "{{ hostvars[virtual_host.redirect_on_group_machine_ip[0]][virtual_host.nic_name | default('')]['ipv4']['address'] | default(ansible_facts['default_ipv4']['address']) }}"
   register: group_machines_fact
   when:
    - virtual_host.redirect_on_group_machine_ip is defined
@@ -59,7 +58,7 @@
       VIRTUAL_HOST: "{{ virtual_host.name }}"
       LETSENCRYPT_HOST: "{{ virtual_host.name if virtual_host.gen_certs is defined and virtual_host.gen_certs == True else omit }}"
       VIRTUAL_PROTO: "{{ virtual_host.proto | default('http') }}"
-      VIRTUAL_PORT: "{{ proxy_container_port.msg }}" # will be linked by nginx-proxy
+      VIRTUAL_PORT: "{{ proxy_container_port.msg | string }}"  # will be linked by nginx-proxy
     state: started
   changed_when: false # idempotence
   when: >
